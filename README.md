@@ -49,12 +49,31 @@ TASK2
 ---
 <br>
 1、观察训练集标签分布
->
+
 ```
 train.label.plot(kind='hist')
 ```
+
 >可观察到0类别标签数量最多
+
 2、其次对text字段使用split方法，将其划分为列表形式
 ```
 train.text=train.text.str.split(' ')
 ```
+
+3、观察每篇文章的长度
+
+```
+train['len']=list(map(lambda x:len(x),train.text))
+train.len.describe()
+```
+
+4、将文章长度进行筛选绘制
+
+```
+train[train.len<10000].len.plot(kind='hist')
+```
+
+>可以看到文章长度大多在0-2000以内
+
+等我会用github了，我也要导入图像......
