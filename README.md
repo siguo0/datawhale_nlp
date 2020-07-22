@@ -49,3 +49,12 @@ TASK2
 ---
 <br>
 1、观察训练集标签分布
+>
+```
+train.label.plot(kind='hist')
+```
+>可观察到0类别标签数量最多
+2、其次对text字段使用split方法，将其划分为列表形式
+```
+train.text=train.text.str.split(' ')
+```
