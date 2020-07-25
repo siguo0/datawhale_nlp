@@ -82,6 +82,7 @@ TASK3
 ---
 <br>
 1、首先导入词袋模型和TFIDF模型,选择词袋模型，设置参数，以下参数仅供64G内存运行，32G内存极限max_features应为10000左右，内存不够用时，对数据类型进行变化，能够有效降低内存，词袋模型中记录为词频，一般而言，词频不会太大,将其转化为uint8类型。
+
 ```
 def word2list(list_word):
     word_list=[]
@@ -110,6 +111,7 @@ del word_list
 
 
 2、按照8:2的比例划分训练测试集
+
 ```
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
@@ -128,6 +130,7 @@ gbm.fit(train_x,train_y,eval_set=[(test_x,test_y)],verbose=True,early_stopping_r
 pre=gbm.predict(test_x)
 f1_score(test_y,pre, average='macro')
 ```
+
 >eval_set设置测试集为标准,当测试集的损失到达一定程度，无法在下降时，early_stopping_rounds会使模型迭代提前结束
 
 4、线上分数
