@@ -76,4 +76,61 @@ train[train.len<10000].len.plot(kind='hist')
 
 >可以看到文章长度大多在0-2000以内
 
-等我会用github了，我也要导入图像......
+
+TASK3
+<br>：基于机器学习的文本分类
+---
+<br>
+1、首先导入词袋模型和TFIDF模型,选择词袋模型，设置参数，以下参数仅供64G内存运行，32G内存极限max_features应为10000左右，内存不够用时，对数据类型进行变化，能够有效降低内存，词袋模型中记录为词频，一般而言，词频不会太大,将其转化为uint8类型。
+```
+def word2list(list_word):
+    word_list=[]
+    for i in list_word:
+        word_list.append(','.join(i))
+    return word_list
+    
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+ngram_vectorizer = CountVectorizer(ngram_range=(1,4),min_df=15,max_df=0.8,max_features=20000,decode_error='replace')
+word_list=word2list(train.text.str.split(' '))
+count=ngram_vectorizer.fit(word_list)
+
+word_list=count.transform(word_list)
+label=train.label
+train=pd.DataFrame(word_list.toarray(),dtype=np.uint8)
+train['label']=label
+del word_list
+```
+
+>ngram_range参数作用相当于滑窗，可在一定程度上考虑到文章上下文相关性，但也会大大加重内存负担。
+
+>min_df设定最少在多少篇文章中出现，才保留该单词，max_df同理。
+
+>max_features设定最终保留单词的数量，即维度，设置后，它会根据词频从大到小的原则进行截取。
+
+
+2、按照8:2的比例划分训练测试集
+```
+from sklearn.metrics import f1_score
+from sklearn.model_selection import train_test_split
+
+train_x,test_x,train_y,test_y=train_test_split(train.drop('label',axis=1),train.label,test_size=0.2,random_state=2020)
+del train
+```
+
+3、导入lightgbm模型进行训练预测
+
+```
+from lightgbm import LGBMClassifier
+
+gbm=LGBMClassifier(n_estimators=100000)
+gbm.fit(train_x,train_y,eval_set=[(test_x,test_y)],verbose=True,early_stopping_rounds=15)
+pre=gbm.predict(test_x)
+f1_score(test_y,pre, average='macro')
+```
+>eval_set设置测试集为标准,当测试集的损失到达一定程度，无法在下降时，early_stopping_rounds会使模型迭代提前结束
+
+4、线上分数
+
+>随着max_features的逐渐增大，模型的准确率会有所提高，直至该方法的上限，以上代码的线上成绩为0.947,模型上限应该在0.95左右，但是太过耗费资源，16G内存应该上限在0.94左右，32G可以勉强达到0.945。
+
