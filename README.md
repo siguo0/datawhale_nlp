@@ -152,5 +152,32 @@ TASK4
 
 >fasttext虽然可能在准确率方面对于词袋模型略有不如,线下验证在0.92左右,但这是仅通过简单调参,得到的结果,词袋模型中有参数可以直接设置词频的获取,如min_df,max_df本身就相当于一层筛选，而对于fasttext模型我暂时未进行数据清洗,并且fasttext的优点在于其能够快速进行,相比词袋模型,不仅大大减少内存的使用,并且节约了许多的时间
 
+---
 
+```
+import pandas as pd
+from sklearn.metrics import f1_score
+import fasttext
+# 转换为FastText需要的格式
+train_df = pd.read_csv('train_set.csv', sep='\t', nrows=200000)
+train_df['label_ft'] = '__label__' + train_df['label'].astype(str)
+train_df[['text','label_ft']].iloc[:-20000].to_csv('train.csv', index=None, header=None, sep='\t')
+
+```
+
+>导入第三方库,对原始数据进行格式改变,fasttext需要标签为__label__的形式
+
+```
+model = fasttext.train_supervised('train.csv', lr=1, wordNgrams=3,
+                                  verbose=2, minCount=1, epoch=100, loss="hs",dim=500)
+```
+
+>初始化fasttext算法模型,传入的数据应该为一个文件,fasttext会通过wordembedding的方法将文章映射到向量空间中,此处损失使用'hs'分层softmax方法，可以大大加快运行速度
+
+```
+val_pred = [model.predict(x)[0][0].split('__')[-1] for x in train_df.iloc[-20000:]['text']]
+print(f1_score(train_df['label'].values[-20000:].astype(str), val_pred, average='macro'))
+```
+
+>简单地对模型结果进行验证,线下成绩为0.92左右
 
