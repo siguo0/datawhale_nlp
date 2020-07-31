@@ -181,3 +181,52 @@ print(f1_score(train_df['label'].values[-20000:].astype(str), val_pred, average=
 
 >简单地对模型结果进行验证,线下成绩为0.92左右
 
+
+
+TASK5
+<br>基于深度学习的文本分类:
+---
+
+**一、word2vec方法**
+
+>word2vec是一种词嵌入方法,本身还是一种单词向量化的方法,根据已有的单词,进行训练,通过神经网络的权重来对单词进行表示，使非结构化的单词变化为结构化的数据形式,本质上相当于一种对于one-hot编码的降维算法
+
+>本次word2vec模型,使用gensim进行训练
+
+```
+from gensim.models.word2vec import Word2Vec
+
+num_features = 100     # Word vector dimensionality
+num_workers = 8       # Number of threads to run in parallel
+
+train_texts = list(map(lambda x: list(x.split()), train_texts))
+model = Word2Vec(train_texts, workers=num_workers, size=num_features)
+model.init_sims(replace=True)
+
+# save model
+model.save("./word2vec.bin")
+```
+
+>整体搬运学习资料中的方法,学习资料中,设定维度为100维,只选取了部分数据进行训练,10000条样本数据,单词数为4500+。
+
+>word2vec基本思想是对出现在上下文环境里的词进行预测,因此它本身就考虑了上下文关系,相对于N-gram算法,word2vec的考虑窗口更大。
+
+>由于word2vec要计算所有单词的权重,随着单词的增加,计算量逐渐增大,因此需要训练技巧来加速训练过程
+>>negative sampling:本质是预测总体类别的一个子集
+>>hierarchical softmax:本质是把 N 分类问题变成 log(N)次二分类
+
+>word2vec相当于一种词嵌入方法,其本身并无法直接对文本问题进行预测,主要应用为预训练模型,将非结构化的单词数据转化为结构化的数值。
+
+**二:textCNN方法**
+
+>对于深度学习方法相当于零基础,因此只能对原理进行一点分析
+
+>卷积神经网络的核心思想是捕捉局部特征，对于文本来说，局部特征就是由若干单词组成的滑动窗口，类似于N-gram。卷积神经网络的优势在于能够自动地对N-gram特征进行组合和筛选，获得不同抽象层次的语义信息。(摘录)
+
+>textcnn中首先进行一个embedding词嵌入,将文字嵌入到向量中作为模型卷积层的输入,示例中使用的即为预训练好的word2vec模型
+
+**三、textRNN方法**
+
+>TextRNN是将Word Embedding输入到双向LSTM中，然后对最后一位的输出输入到全连接层中，在对其进行softmax分类即可。
+
+>关于RNN与LSTM暂时并无太多了解,后续补充
