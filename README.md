@@ -230,3 +230,19 @@ model.save("./word2vec.bin")
 >TextRNN是将Word Embedding输入到双向LSTM中，然后对最后一位的输出输入到全连接层中，在对其进行softmax分类即可。
 
 >关于RNN与LSTM暂时并无太多了解,后续补充
+
+TASK6
+<br>基于深度学习的文本分类3-BERT:
+**bert概念**
+
+>bert是一种基于预训练的模型,其基于语言模型,在其基础上引入马尔科夫假设的n-gram模型
+
+>BERT的全称是Bidirectional Encoder Representation from Transformers，即双向Transformer的Encoder
+
+>bert的主要创新方法在于预训练方法上，即用了Masked LM和Next Sentence Prediction两种方法分别捕捉词语和句子级别的representation。
+
+>bert使用transformers模型替代传统RNN模型作为seq2seq的基础，其中transformers模型使用self-attention注意力机制，transformer模型相对于传统RNN模型更加高效，能够捕捉更长距离依赖。
+
+**bert对于该题的效果**
+
+>据说20w数据能够基本完成bert模型的预训练,不过bert模型需要耗费较多时间，当前个人笔记本另做它用，无法同时进行，因此未能完整尝试，不过baseline中10000数据的效果似乎不佳？是否因为bert模型在缺乏训练时自然效果不佳，或者自己操作失误？
