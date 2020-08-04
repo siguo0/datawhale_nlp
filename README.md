@@ -231,8 +231,10 @@ model.save("./word2vec.bin")
 
 >关于RNN与LSTM暂时并无太多了解,后续补充
 
+
 TASK6
 <br>基于深度学习的文本分类3-BERT:
+---
 **bert概念**
 
 >bert是一种基于预训练的模型,其基于语言模型,在其基础上引入马尔科夫假设的n-gram模型
